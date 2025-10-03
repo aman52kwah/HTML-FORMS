@@ -162,69 +162,77 @@ acceptTermsCheckbox.addEventListener('change',()=>{
     });
  });
 
- form.addEventListener('submit', async (e) =>{
-    e.preventDefault();
-    hideError();
+ form.addEventListener("submit", async (e) => {
+   e.preventDefault();
+   hideError();
 
-    if(!formData.firstName.trim()){
-        showError('Please enter your first name');
-        return;
-    }
+   if (!formData.firstName.trim()) {
+     showError("Please enter your first name");
+     return;
+   }
 
+   if (!formData.lastName.trim()) {
+     showError("please enter your first name");
+     return;
+   }
 
-    if(!formData.lastName.trim()){
-        showError('please enter your first name');
-        return;
-    }
+   if (!validateEmail(formData.email)) {
+     showError("Please enter a valid email address");
+     return;
+   }
 
-    if(!validateEmail(formData.email)){
-        showError('Please enter a valid email address');
-        return;
-    }
+   if (formData.password !== formData.confirmPassword) {
+     showError("passwords do not match");
+     return;
+   }
 
-    if(formData.password !== formData.confirmPassword){
-        showError('passwords do not match');
-        return;
-    }
+   if (!acceptTermsCheckbox.checked) {
+     showError("Please accept the Terms of Service and Privacy Policy");
+     return;
+   }
 
+   submitBtnText.classList.add("hidden");
+   submitBtnLoader.classList.remove("hidden");
+   submitBtn.disabled = true;
 
-    if(!acceptTermsCheckbox.checked){
-        showError('Please accept the Terms of Service and Privacy Policy');
-        return ;
-    }
+   const inputs = form.querySelectorAll("input");
+   inputs.forEach((input) => (input.disabled = true));
 
-    submitBtnText.classList.add('hidden');
-    submitBtnLoader.classList.remove('hidden');
-    submitBtn.disabled= true;
+   try {
+     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const inputs = form.querySelectorAll('input');
-    inputs.forEach(input =>input.disabled = true);
+     console.log("Form submitted:", {
+       firstName: formData.firstName,
+       lastName: formData.lastName,
+       email: formData.email,
+     });
 
+     alert("Accounted created Successfully!");
+     form.reset();
+     formData.firstName = "";
+     formData.lastName = "";
+     formData.email = "";
+     formData.password = "";
+     formData.confirmPassword = "";
+     passwordRequirements.classList.add("hidden");
+   } catch (error) {
+     showError("An error occured. Please try again.");
+     console.error("Submission error:", error);
+   } finally {
+     submitBtnText.classList.remove("hidden");
+     submitBtnLoader.classList.add("hidden");
+     inputs.forEach((input) => (input.disabled = false));
+     validateForm();
+   }
+ });
 
-    try {
-        await new Promise(resolve => setTimeout(resolve,2000));
+ document.getElementById("switchToLogin").addEventListener("click", () => {
+   alert("Switch to login page");
+ });
 
-        console.log('Form submitted:',{
-            firstName:formData.firstName,
-            lastName:formData.lastName,
-            email:formData.email
-        });
-
-        alert ('Accounted created Successfully!');
-        form.reset();
-        formData.firstName = '';
-        formData.lastName ='';
-        formData.email = '';
-        formData.password ='';
-        formData.confirmPassword = '';
-        passwordRequirements.classList.add('hidden');
-    } catch (error) {
-        showError('An error occured. Please try again.');
-        console.error('Submission error:',error);
-    } finally{
-        submitBtnText.classList.remove('hidden');
-        submitBtnLoader.classList.add('hidden');
-        inputs.forEach(input => input.disabled = false);
-        validateForm();
-    }
- })
+ document.querySelectorAll(".link-button").forEach((button) => {
+   button.addEventListener("click", (e) => {
+     e.preventDefault();
+     alert("Linked Clicked:" + button.textContent);
+   });
+ });
